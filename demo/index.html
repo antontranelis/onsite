@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>Map Artist</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="css/style.css?v=1.0">
+
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
+
+	<link rel="stylesheet" href="css/leaflet.extra-markers.min.css">
+	<script src="js/leaflet.extra-markers.min.js"></script>
+
+	<script src="https://use.fontawesome.com/a16c0e62d8.js"></script>
+
+	<script src="js/jquery-3.2.1.min.js"></script>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+
+
+</head>
+
+<body>
+
+<div id="mapid"></div>
+
+<script type="text/javascript">
+
+	var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+	mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibmV4dHF1ZXN0IiwiYSI6ImNqM2x1dzNkbDAxajUyd3F0bmc3b3E0dHQifQ.V4hEw7CC3e_76sNhMxwE3Q';
+
+	var grayscale   = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
+		  streets  = L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr});
+
+	var baseLayers = {
+		"Streets": streets,
+		"Grayscale": grayscale
+	};
+
+	var sales = L.layerGroup(),
+	    services = L.layerGroup(),
+			rentals = L.layerGroup(),
+			giveaways = L.layerGroup(),
+			events = L.layerGroup(),
+			jobs = L.layerGroup(),
+			contacts = L.layerGroup();
+
+	var overlays = {
+		"Sales": sales,
+		"Services": services,
+		"Rentals": rentals,
+		"Give aways": giveaways,
+		"Events": events,
+		"Jobs": jobs,
+		"Contacts": contacts
+	};
+
+	var map = L.map('mapid', {
+		center: [52.268874, 10.52677],
+		zoom: 12,
+		layers: [streets, sales, services, rentals, jobs, contacts, giveaways, events],
+		doubleClickZoom: false
+	});
+
+	L.control.layers(baseLayers, overlays).addTo(map);
+
+	// Creates a red marker with the coffee icon
+var squareMarker = L.ExtraMarkers.icon({
+	icon: 'fa-coffee',
+	markerColor: 'green',
+	shape: 'square',
+	prefix: 'fa'
+});
+
+var circleMarker = L.ExtraMarkers.icon({
+	icon: 'fa-comments',
+	markerColor: 'green',
+	shape: 'circle',
+	prefix: 'fa'
+});
+
+var starMarker = L.ExtraMarkers.icon({
+	icon: 'fa-comments',
+	markerColor: 'orange',
+	shape: 'star',
+	prefix: 'fa'
+});
+
+var pentaMarker = L.ExtraMarkers.icon({
+	icon: 'fa-comments',
+	markerColor: 'orange',
+	shape: 'penta',
+	prefix: 'fa'
+});
+
+L.marker([52.269496754322255,10.524001121520996], {icon: squareMarker,}).bindPopup('Eine Tasse Cafè?').bindTooltip("my tooltip text").addTo(sales);
+L.marker([52.25964,10.531], {icon: circleMarker,}).bindPopup('Wer hat Lust auf ein nettes Gespräch?').addTo(services);
+L.marker([52.272674338453044,10.54365634918213], {icon: starMarker,}).bindPopup('Wer hat Lust auf ein nettes Gespräch?').addTo(contacts);
+L.marker([52.26138106375439,10.515589714050295], {icon: pentaMarker,}).bindPopup('Wer hat Lust auf ein nettes Gespräch?').addTo(jobs);
+
+
+
+var popup = L.popup({minWidth: 300});
+
+function onMapDblclick(e) {
+    popup
+        .setLatLng(e.latlng)
+        .setContent(
+					"<h4 class='mx-auto'>New Ad</h4>"+
+					"<form id='form'>"+
+					"<div class='form-group'><label for='content'>Name</label><input id='name' class='form-control' placeholder='...'></div>"+
+					"<div class='form-group'><label for='category'>Category</label><select class='form-control' id='category'>"+
+			      "<option>Offer for sale</option>"+
+			      "<option>Service</option>"+
+			      "<option>To give away</option>"+
+			      "<option>Event</option>"+
+			      "<option>Job</option>"+
+			    	"</select></div>"+
+			"<div class='form-group'><label for='content'>Content</label><textarea rows='5' id='content' class='form-control' placeholder='...'></textarea><small id='contentHelp' class='form-text text-muted'>We'll never share your email with anyone else.</small></div>"+
+					"<div class='form-check form-check-inline'>"+
+					  "<label class='form-check-label'>"+
+					    "<input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio1' value='offer'> Offer"+
+					  "</label>"+
+					"</div>"+
+					"<div class='form-check form-check-inline'>"+
+					  "<label class='form-check-label'>"+
+					    "<input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio2' value='need'> Need"+
+					  "</label>"+
+					"</div>"+
+					"<br><button type='submit' class='btn btn-primary' >Submit</button>"+
+					"</form>")
+        .openOn(map);
+
+				$('#form').submit(function(e){
+    			e.preventDefault();
+					console.log("submit");
+				});
+
+}
+
+
+
+function onMapClick(e) {
+    popup
+        .setLatLng(e.latlng)
+        .setContent(e.latlng.lat.toString()+','+e.latlng.lng.toString())
+        .openOn(map);
+}
+
+map.on('click', onMapClick);
+map.on('dblclick', onMapDblclick);
+
+
+</script>
+
+</body>
+
+</html>
